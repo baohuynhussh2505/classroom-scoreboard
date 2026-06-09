@@ -17,7 +17,7 @@
 
         /* Navigation Tabs */
         .tab-container { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
-        .tab-btn { background: #7f8c8d; padding: 12px 30px; font-size: 16px; border-radius: 8px; }
+        .tab-btn { background: #7f8c8d; padding: 12px 30px; font-size: 16px; border-radius: 8px; color: white; font-weight: bold; border: none; cursor: pointer; }
         .tab-btn.active { background: #3498db; box-shadow: 0 0 10px rgba(52, 152, 219, 0.5); }
 
         /* View Panels */
@@ -179,12 +179,11 @@
         var activeStudentIndex = null;
         var currentView = "individual";
 
-        // UPDATED: Reordered team names array to exactly match your prompt layout
         var teamNames = ["Viridian", "Cinnabar", "Cerulean"];
         var basePaths = [
-            ["avatar/ava_0001.png", "avatar/ava_0002.png", "avatar/ava_0003.png"], // Path 1 -> Viridian
-            ["avatar/ava_0004.png", "avatar/ava_0005.png", "avatar/ava_0006.png"], // Path 2 -> Cinnabar
-            ["avatar/ava_0007.png", "avatar/ava_0008.png", "avatar/ava_0009.png"]  // Path 3 -> Cerulean
+            ["avatar/ava_0001.png", "avatar/ava_0002.png", "avatar/ava_0003.png"], 
+            ["avatar/ava_0004.png", "avatar/ava_0005.png", "avatar/ava_0006.png"], 
+            ["avatar/ava_0007.png", "avatar/ava_0008.png", "avatar/ava_0009.png"]  
         ];
 
         var defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a0aec0'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v2h-16v-2c0-2.66 5.33-4 8-4z'/></svg>";
@@ -302,7 +301,6 @@
         function renderTeam() {
             triggerAutosave();
             
-            // Reorganized team data storage object to leverage new tags configuration mapping entries
             var teams = {
                 "Viridian": { score: 0, members: [], color: "viridian" },
                 "Cinnabar": { score: 0, members: [], color: "cinnabar" },
@@ -346,11 +344,13 @@
                 var col = document.createElement("div");
                 col.className = "podium-column col-" + team.color;
                 col.style.height = colHeight + "px";
-                col.innerHTML = `
-                    <div class="podium-rank">${trueRank === 1 ? '🥇' : trueRank === 2 ? '🥈' : trueRank === 3 ? '🥉' : '✨'}</div>
-                    <div class="podium-team-name">${team.name}</div>
-                    <div class="podium-score">${team.score} pts</div>
-                `;
+                
+                // FIXED SCRUMBLED CODE: Replaced backticks with clean concatenated traditional quotes
+                col.innerHTML = 
+                    "<div class='podium-rank'>" + (trueRank === 1 ? '🥇' : trueRank === 2 ? '🥈' : trueRank === 3 ? '🥉' : '✨') + "</div>" +
+                    "<div class='podium-team-name'>" + team.name + "</div>" +
+                    "<div class='podium-score'>" + team.score + " pts</div>";
+                    
                 podiumArea.appendChild(col);
             }
 
@@ -366,7 +366,7 @@
                 
                 var head = document.createElement("div");
                 head.className = "contribution-title";
-                head.innerHTML = `<span>🛡️ Team ${tObj.name} Roster</span> <span>Total: ${tObj.score} pts</span>`;
+                head.innerHTML = "<span>🛡️ Team " + tObj.name + " Roster</span> <span>Total: " + tObj.score + " pts</span>";
                 card.appendChild(head);
                 
                 var mList = document.createElement("div");
@@ -397,7 +397,6 @@
             var grid = document.getElementById("modalGrid");
             grid.innerHTML = ""; 
             
-            // UPDATED: Dynamic labeling mapping sequence order directly tracking the customized layout
             var pathLabels = ["🟢 Viridian Path", "🔴 Cinnabar Path", "🔵 Cerulean Path"];
 
             for (var p = 0; p < basePaths.length; p++) {
