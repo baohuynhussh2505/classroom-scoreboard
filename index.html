@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Classroom Tracker - Continuous Autosave</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; text-align: center; }
+        
+        .box { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 900px; margin: auto; }
+        
+        textarea { width: 95%; height: 80px; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; resize: vertical; }
+        
+        /* Class Selector Styling */
+        .class-header { background: #34495e; color: white; padding: 15px; border-radius: 5px; margin-bottom: 15px; }
+        .class-header h2 { margin: 0 0 10px 0; font-size: 26px; color: #f1c40f; }
+        .class-input { padding: 8px; width: 50%; font-size: 15px; border: 1px solid #ccc; border-radius: 4px; text-align: center; }
+
+        /* General Buttons */
+        button { padding: 10px 18px; cursor: pointer; border: none; border-radius: 5px; color: white; margin: 2px; font-weight: bold; font-size: 14px; }
+        .add-btn { background: #2ecc71; }
+        .add-btn:hover { background: #27ae60; }
+        .clear-all { background: #7f8c8d; }
+        .clear-all:hover { background: #95a5a6; }
+        
+        /* Save/Load Row */
+        .storage-section { margin: 15px 0; padding: 15px; background: #edf2f7; border-radius: 5px; border: 1px dashed #cbd5e0; }
+        .save-btn { background: #9b59b6; } 
+        .save-btn:hover { background: #8e44ad; }
+        .load-label { background: #f39c12; display: inline-block; padding: 10px 18px; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; font-size: 14px; }
+        .load-label:hover { background: #e67e22; }
+        #fileInput { display: none; } 
+        
+        /* Table Layout */
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        th { background: #2c3e50; color: white; padding: 12px; font-size: 16px; }
+        td { padding: 12px; border-bottom: 1px solid #ddd; vertical-align: middle; font-size: 16px; }
+        
+        /* Avatar Profile Styling */
+        .avatar-cell { display: flex; align-items: center; gap: 10px; justify-content: flex-start; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #e2e8f0; border: 2px solid #cbd5e0; flex-shrink: 0; }
+        
+        /* Pencil Icon */
+        .upload-avatar-lbl { font-size: 16px; cursor: pointer; padding: 4px; border-radius: 4px; background: transparent; display: inline-block; }
+        .upload-avatar-lbl:hover { background: #e2e8f0; }
+        .hidden-file { display: none; }
+
+        /* Compact Point Button Group */
+        .btn-group { display: flex; gap: 4px; justify-content: center; align-items: center; }
+        .score-btn { padding: 6px 10px; font-size: 13px; margin: 0; min-width: 38px; }
+        .btn-plus { background: #2ecc71; }
+        .btn-plus:hover { background: #27ae60; }
+        .btn-minus { background: #e74c3c; }
+        .btn-minus:hover { background: #c0392b; }
+        
+        /* Delete Student Button */
+        .del-btn { background: #95a5a6; padding: 6px 10px; font-size: 14px; margin: 0; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        
+        <div class="class-header">
+            <h2 id="currentClassDisplay">🏆 Leaderboard: Unnamed Class 🏆</h2>
+            <input type="text" id="classNameInput" class="class-input" placeholder="Type Class Name..." onkeyup="updateClassName()">
+        </div>
+        
+        <textarea id="bulkNames" placeholder="Paste names from Excel here (one per line)..."></textarea>
+        <br>
+        <button class="add-btn" onclick="addBulk()">➕ Bulk Add Students</button>
+        <button class="clear-all" onclick="remAll()">Clear Board</button>
+        
+        <div class="storage-section">
+            <button class="save-btn" onclick="saveToFile()">💾 Download/Save Backup File</button>
+            <label for="fileInput" class="load-label">📂 Load a Class File</label>
+            <input type="file" id="fileInput" accept=".txt" onchange="loadFromFile(this)">
+            <p style="margin: 8px 0 0 0; font-size: 12px; color: #27ae60; font-weight: bold;">🔄 Continuous Autosave Active</p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">Rank</th>
+                    <th style="width: 35%;">Name / Profile</th>
+                    <th style="width: 15%;">Score</th>
+                    <th style="width: 30%;">Modify Points</th>
+                    <th style="width: 10%;">Remove</th>
+                </tr>
+            </thead>
+            <tbody id="list"></tbody>
+        </table>
+    </div>
+
+    <script>
+        var data = [];
+        var currentClassName = "Unnamed Class";
+
+        var defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a0aec0'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v2h-16v-2c0-2.66 5.33-4 8-4z'/></svg>";
+
+        // --- NEW SAFETY AUTOLOAD ON STARTUP ---
+        try {
+            var autoSavedName = localStorage.getItem("autoClassName");
+            var autoSavedData = localStorage.getItem("autoClassData");
+            
+            if (autoSavedName) currentClassName = autoSavedName;
+            if (autoSavedData) data = JSON.parse(autoSavedData);
+        } catch(e) {
+            console.log("Browser storage blocked, running in volatile session mode.");
+        }
+
+        function updateClassName() {
+            var input = document.getElementById("classNameInput");
+            currentClassName = input.value.trim() || "Unnamed Class";
+            document.getElementById("currentClassDisplay").innerText = "🏆 Leaderboard: " + currentClassName + " 🏆";
+            triggerAutosave();
+        }
+
+        // Silent background save
+        function triggerAutosave() {
+            try {
+                localStorage.setItem("autoClassName", currentClassName);
+                localStorage.setItem("autoClassData", JSON.stringify(data));
+            } catch(e) {}
+        }
+
+        function render() {
+            var list = document.getElementById("list");
+            list.innerHTML = "";
+            
+            data.sort(function(a, b) { return b.s - a.s; });
+            
+            // Sync current state to browser memory right before showing it
+            triggerAutosave();
+            
+            for (var i = 0; i < data.length; i++) {
+                var imgSrc = data[i].img || defaultAvatar;
+                var row = document.createElement("tr");
+                
+                var tdRank = document.createElement("td");
+                tdRank.innerHTML = "<strong>#" + (i + 1) + "</strong>";
+                row.appendChild(tdRank);
+                
+                var tdName = document.createElement("td");
+                var cellDiv = document.createElement("div");
+                cellDiv.className = "avatar-cell";
+                
+                var img = document.createElement("img");
+                img.className = "avatar";
+                img.src = imgSrc;
+                
+                var txtSpan = document.createElement("span");
+                txtSpan.innerText = data[i].n;
+                
+                var label = document.createElement("label");
+                label.className = "upload-avatar-lbl";
+                label.innerHTML = "✏️<input type='file' class='hidden-file' accept='image/*' onchange='uploadAvatar(this, " + i + ")'>";
+                
+                cellDiv.appendChild(img);
+                cellDiv.appendChild(txtSpan);
+                cellDiv.appendChild(label);
+                tdName.appendChild(cellDiv);
+                row.appendChild(tdName);
+                
+                var tdScore = document.createElement("td");
+                tdScore.innerHTML = "<strong>" + data[i].s + "</strong>";
+                row.appendChild(tdScore);
+                
+                var tdModify = document.createElement("td");
+                var btnGroup = document.createElement("div");
+                btnGroup.className = "btn-group";
+                btnGroup.innerHTML = 
+                    "<button class='score-btn btn-plus' onclick='upd(" + i + ",1)'>+1</button>" +
+                    "<button class='score-btn btn-plus' onclick='upd(" + i + ",5)'>+5</button>" +
+                    "<button class='score-btn btn-minus' onclick='upd(" + i + ",-1)'>-1</button>" +
+                    "<button class='score-btn btn-minus' onclick='upd(" + i + ",-5)'>-5</button>";
+                tdModify.appendChild(btnGroup);
+                row.appendChild(tdModify);
+                
+                var tdDel = document.createElement("td");
+                tdDel.innerHTML = "<button class='del-btn' onclick='rem(" + i + ")'>❌</button>";
+                row.appendChild(tdDel);
+                
+                list.appendChild(row);
+            }
+        }
+
+        function addBulk() {
+            var box = document.getElementById("bulkNames");
+            var lines = box.value.split("\n");
+            for (var i = 0; i < lines.length; i++) {
+                var name = lines[i].trim();
+                if (name !== "") data.push({n: name, s: 0, img: ""});
+            }
+            box.value = "";
+            render();
+        }
+
+        function uploadAvatar(input, idx) {
+            var file = input.files[0];
+            if (!file) return;
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                data[idx].img = e.target.result;
+                render();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function upd(idx, amt) {
+            data[idx].s += amt;
+            render();
+        }
+
+        function rem(idx) {
+            if (confirm("Delete " + data[idx].n + "?")) {
+                data.splice(idx, 1);
+                render();
+            }
+        }
+
+        function remAll() {
+            if (confirm("Clear the entire board?")) {
+                data = [];
+                currentClassName = "Unnamed Class";
+                document.getElementById("classNameInput").value = "";
+                document.getElementById("currentClassDisplay").innerText = "🏆 Leaderboard: Unnamed Class 🏆";
+                render();
+            }
+        }
+
+        function saveToFile() {
+            if (data.length === 0) {
+                alert("The board is empty!");
+                return;
+            }
+            var packageToSave = { className: currentClassName, students: data };
+            var stringData = JSON.stringify(packageToSave);
+            var blob = new Blob([stringData], { type: "text/plain" });
+            var a = document.createElement("a");
+            var safeName = currentClassName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            a.download = "leaderboard_" + safeName + ".txt";
+            a.href = URL.createObjectURL(blob);
+            a.click();
+        }
+
+        function loadFromFile(input) {
+            var file = input.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var parsed = JSON.parse(e.target.result);
+                    currentClassName = parsed.className || "Loaded Class";
+                    data = parsed.students || [];
+                    
+                    render();
+                    alert("Loaded " + currentClassName + " successfully!");
+                } catch (err) {
+                    alert("Error loading file.");
+                }
+            };
+            reader.readAsText(file);
+            input.value = ""; 
+        }
+
+        // Apply startup fields text configuration
+        if (currentClassName !== "Unnamed Class") {
+            document.getElementById("classNameInput").value = currentClassName;
+        }
+        document.getElementById("currentClassDisplay").innerText = "🏆 Leaderboard: " + currentClassName + " 🏆";
+
+        render();
+    </script>
+</body>
+</html>
