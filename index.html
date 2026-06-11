@@ -293,8 +293,44 @@
                 img.className = "avatar";
                 img.src = imgSrc;
                 
-                var txtSpan = document.createElement("span");
+               var txtSpan = document.createElement("span");
                 txtSpan.innerText = data[i].n;
+                txtSpan.style.cursor = "pointer";
+                txtSpan.title = "Double-click to edit name";
+                
+                // Double-click handler to turn text into an input box
+                txtSpan.ondblclick = (function(index, currentSpan) {
+                    return function() {
+                        var currentName = data[index].n;
+                        var input = document.createElement("input");
+                        input.type = "text";
+                        input.value = currentName;
+                        input.style.fontSize = "16px";
+                        input.style.padding = "2px 6px";
+                        
+                        // Function to save the new name
+                        var saveName = function() {
+                            var newName = input.value.trim();
+                            if (newName !== "") {
+                                data[index].n = newName;
+                            }
+                            render(); // Redraw table with the updated name
+                        };
+                        
+                        // Save on Enter keypress
+                        input.onkeyup = function(e) {
+                            if (e.key === "Enter") saveName();
+                        };
+                        
+                        // Save if user clicks away from the input box
+                        input.onblur = saveName;
+                        
+                        // Swap out the span for our temporary input box and select the text
+                        currentSpan.replaceWith(input);
+                        input.focus();
+                        input.select();
+                    };
+                })(i, txtSpan);
                 
                 var fLabel = document.createElement("span");
                 if (data[i].pathIdx === -1) {
