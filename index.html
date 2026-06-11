@@ -523,7 +523,9 @@
                 var lbl = document.createElement("span");
                 lbl.className = "starter-label";
                 lbl.style.fontSize = "12px";
-                lbl.innerText = (team === "Viridian" ? "🟢 " : team === "Cinnabar" ? "🔴 " : "🔵 ") + "Form " + (p + 1);
+                
+                // Displays the team emoji alongside your custom name label string
+                lbl.innerText = (team === "Viridian" ? "🟢 " : team === "Cinnabar" ? "🔴 " : "🔵 ") + customName;
 
                 optionContainer.appendChild(img);
                 optionContainer.appendChild(lbl);
