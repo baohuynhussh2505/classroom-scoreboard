@@ -482,13 +482,24 @@
             var grid = document.getElementById("modalGrid");
             grid.innerHTML = ""; 
             
-            // Adjust the window overlay layout styles dynamically for 24 options
+            // --- UPDATED FOR PERFECT HORIZONTAL WIDTH COMPATIBILITY ---
             grid.style.display = "grid";
-            grid.style.gridTemplateColumns = "repeat(9, 1fr)";
-            grid.style.gap = "15px";
-            grid.style.maxHeight = "400px";
+            grid.style.gridTemplateColumns = "repeat(6, 1fr)"; // 6 icons per row fits flawlessly
+            grid.style.gap = "20px";
+            grid.style.maxHeight = "450px"; // Slightly taller to account for vertical rows
             grid.style.overflowY = "auto";
+            grid.style.padding = "10px"; // Adds a safety buffer so edge icons don't clip
+            // === YOUR CUSTOM FORM NAMES MAP (ALL 27 FORMS) ===
+            var formNames = [
+                // Viridian Forms (0 to 8)
+                "Bulbasaur", "Chikorita", "Treeko", "Turtwig", "Snivy", "Chespin", "Rowlet", "Grookey", "Sprigatito",
 
+                // Cinnabar Forms (9 to 17)
+                "Charmander", "Cyndaquil", "Torchic", "Chimchar", "Tepig", "Fennekin", "Litten", "Scorbunny", "Fuecoco",
+
+                // Cerulean Forms (18 to 26)
+                "Squirtle", "Totodile", "Mudkip", "Piplup", "Oshawott", "Froakie", "Popplio", "Sobble", "Quaxly"
+            ];
             for (var p = 0; p < basePaths.length; p++) {
                 var team = getTeamName(p);
                 var optionContainer = document.createElement("div");
