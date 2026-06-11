@@ -175,12 +175,47 @@
         var currentView = "individual";
 
         var teamNames = ["Viridian", "Cinnabar", "Cerulean"];
+        // --- ALL 24 PATHS GROUPED BY TEAM FACTION ---
         var basePaths = [
-            ["avatar/ava_0001.png", "avatar/ava_0002.png", "avatar/ava_0003.png"], 
-            ["avatar/ava_0004.png", "avatar/ava_0005.png", "avatar/ava_0006.png"], 
-            ["avatar/ava_0007.png", "avatar/ava_0008.png", "avatar/ava_0009.png"]  
-        ];
+            // === VIRIDIAN PATHS (Indices 0 to 7) ===
+            ["avatar/ava_0001.png", "avatar/ava_0002.png", "avatar/ava_0003.png"],
+            ["avatar/ava_0152.png", "avatar/ava_0153.png", "avatar/ava_0154.png"],
+            ["avatar/ava_0252.png", "avatar/ava_0253.png", "avatar/ava_0254.png"],
+            ["avatar/ava_0387.png", "avatar/ava_0388.png", "avatar/ava_0389.png"],
+            ["avatar/ava_0650.png", "avatar/ava_0651.png", "avatar/ava_0652.png"],
+            ["avatar/ava_0722.png", "avatar/ava_0723.png", "avatar/ava_0724.png"],
+            ["avatar/ava_0810.png", "avatar/ava_0811.png", "avatar/ava_0812.png"],
+            ["avatar/ava_0906.png", "avatar/ava_0907.png", "avatar/ava_0908.png"],
 
+            // === CINNABAR PATHS (Indices 8 to 15) ===
+            ["avatar/ava_0004.png", "avatar/ava_0005.png", "avatar/ava_0006.png"],
+            ["avatar/ava_0155.png", "avatar/ava_0156.png", "avatar/ava_0157.png"],
+            ["avatar/ava_0255.png", "avatar/ava_0256.png", "avatar/ava_0257.png"],
+            ["avatar/ava_0390.png", "avatar/ava_0391.png", "avatar/ava_0392.png"],
+            ["avatar/ava_0498.png", "avatar/ava_0499.png", "avatar/ava_0500.png"],
+            ["avatar/ava_0653.png", "avatar/ava_0654.png", "avatar/ava_0655.png"],
+            ["avatar/ava_0725.png", "avatar/ava_0726.png", "avatar/ava_0727.png"],
+            ["avatar/ava_0813.png", "avatar/ava_0814.png", "avatar/ava_0815.png"],
+            ["avatar/ava_0909.png", "avatar/ava_0910.png", "avatar/ava_0911.png"],
+
+            // === CERULEAN PATHS (Indices 16 to 23) ===
+            ["avatar/ava_0007.png", "avatar/ava_0008.png", "avatar/ava_0009.png"],
+            ["avatar/ava_0158.png", "avatar/ava_0159.png", "avatar/ava_0160.png"],
+            ["avatar/ava_0258.png", "avatar/ava_0259.png", "avatar/ava_0260.png"],
+            ["avatar/ava_0393.png", "avatar/ava_0394.png", "avatar/ava_0395.png"],
+            ["avatar/ava_0501.png", "avatar/ava_0502.png", "avatar/ava_0503.png"],
+            ["avatar/ava_0656.png", "avatar/ava_0657.png", "avatar/ava_0658.png"],
+            ["avatar/ava_0728.png", "avatar/ava_0729.png", "avatar/ava_0730.png"],
+            ["avatar/ava_0816.png", "avatar/ava_0817.png", "avatar/ava_0818.png"],
+            ["avatar/ava_0912.png", "avatar/ava_0913.png", "avatar/ava_0914.png"]
+        ];
+        // Dynamic team lookups based on our 24 ordered indices
+        function getTeamName(pathIdx) {
+            if (pathIdx >= 0 && pathIdx <= 7) return "Viridian";
+            if (pathIdx >= 8 && pathIdx <= 15) return "Cinnabar";
+            if (pathIdx >= 16 && pathIdx <= 23) return "Cerulean";
+            return "Pallet";
+        }
         var defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a0aec0'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v2h-16v-2c0-2.66 5.33-4 8-4z'/></svg>";
 
         // --- BUILT-IN AUTOMATIC FIX FOR DATA CORRUPTION CRASHES ---
@@ -266,7 +301,7 @@
                     fLabel.className = "team-tag tag-pallet";
                     fLabel.innerText = "Pallet";
                 } else {
-                    var tName = teamNames[data[i].pathIdx];
+                    var tName = getTeamName(data[i].pathIdx);
                     fLabel.className = "team-tag tag-" + tName.toLowerCase();
                     fLabel.innerText = tName;
                 }
@@ -317,7 +352,7 @@
             };
 
             for (var i = 0; i < data.length; i++) {
-                var tKey = data[i].pathIdx === -1 ? "Pallet" : teamNames[data[i].pathIdx];
+                var tKey = data[i].pathIdx === -1 ? "Pallet" : getTeamName(data[i].pathIdx);
                 teams[tKey].score += data[i].s;
                 teams[tKey].members.push(data[i]);
             }
@@ -404,28 +439,37 @@
             var grid = document.getElementById("modalGrid");
             grid.innerHTML = ""; 
             
-            var pathLabels = ["🟢 Viridian Path", "🔴 Cinnabar Path", "🔵 Cerulean Path"];
+            // Adjust the window overlay layout styles dynamically for 24 options
+            grid.style.display = "grid";
+            grid.style.gridTemplateColumns = "repeat(6, 1fr)";
+            grid.style.gap = "15px";
+            grid.style.maxHeight = "400px";
+            grid.style.overflowY = "auto";
 
             for (var p = 0; p < basePaths.length; p++) {
+                var team = getTeamName(p);
                 var optionContainer = document.createElement("div");
                 optionContainer.className = "starter-option";
 
                 var img = document.createElement("img");
                 img.className = "gallery-img-large";
+                img.style.width = "85px"; // Scaled down to fit 6 options per row cleanly
+                img.style.height = "85px";
                 img.src = basePaths[p][0]; 
                 
                 img.onclick = (function(pathIndex, imgPath, tName) {
                     return function() { 
-                        var check = confirm("Are you sure you want to choose the " + tName + " form?\nYou CANNOT change your team affiliation later.");
+                        var check = confirm("Are you sure you want to choose this form?\nYou CANNOT change your team affiliation later.");
                         if (check) {
                             selectStarter(pathIndex, imgPath);
                         }
                     };
-                })(p, basePaths[p][0], teamNames[p]);
+                })(p, basePaths[p][0], team);
                 
                 var lbl = document.createElement("span");
                 lbl.className = "starter-label";
-                lbl.innerText = pathLabels[p];
+                lbl.style.fontSize = "12px";
+                lbl.innerText = (team === "Viridian" ? "🟢 " : team === "Cinnabar" ? "🔴 " : "🔵 ") + "Form " + (p + 1);
 
                 optionContainer.appendChild(img);
                 optionContainer.appendChild(lbl);
