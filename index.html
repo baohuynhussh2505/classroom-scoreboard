@@ -148,7 +148,7 @@
 
     <div id="avatarModal" class="modal-overlay">
         <div class="modal-content starter-box">
-            <h2 style="font-size: 28px; margin: 0;">✨ Choose Your Faction Alliance ✨</h2>
+            <h2 style="font-size: 28px; margin: 0;">✨ Choose Your Starter ✨</h2>
             <p style="color: #666; font-size: 16px;">Selecting a path locks you into that team faction permanently!</p>
             <div id="modalGrid" class="modal-grid-large"></div>
             <button class="close-modal" style="width: 30%; font-size: 16px;" onclick="closeGallery()">Cancel</button>
@@ -309,7 +309,13 @@
                 var editBtn = document.createElement("button");
                 editBtn.className = "upload-avatar-lbl";
                 editBtn.innerHTML = "✏️";
-                editBtn.onclick = (function(index) { return function() { openGallery(index); }; })(i);
+                
+                // Hide the button if they have already locked in a path
+                if (data[i].pathIdx !== -1) {
+                    editBtn.style.display = "none";
+                } else {
+                    editBtn.onclick = (function(index) { return function() { openGallery(index); }; })(i);
+                }
                 
                 cellDiv.appendChild(img);
                 cellDiv.appendChild(txtSpan);
