@@ -175,19 +175,20 @@
         var currentView = "individual";
 
         var teamNames = ["Viridian", "Cinnabar", "Cerulean"];
-        // --- ALL 24 PATHS GROUPED BY TEAM FACTION ---
+        // --- ALL 27 PATHS BALANCED AND FACTION-SORTED ---
         var basePaths = [
-            // === VIRIDIAN PATHS (Indices 0 to 7) ===
+            // === VIRIDIAN PATHS (Indices 0 to 8) ===
             ["avatar/ava_0001.png", "avatar/ava_0002.png", "avatar/ava_0003.png"],
             ["avatar/ava_0152.png", "avatar/ava_0153.png", "avatar/ava_0154.png"],
             ["avatar/ava_0252.png", "avatar/ava_0253.png", "avatar/ava_0254.png"],
             ["avatar/ava_0387.png", "avatar/ava_0388.png", "avatar/ava_0389.png"],
+            ["avatar/ava_0495.png", "avatar/ava_0496.png", "avatar/ava_0497.png"],
             ["avatar/ava_0650.png", "avatar/ava_0651.png", "avatar/ava_0652.png"],
             ["avatar/ava_0722.png", "avatar/ava_0723.png", "avatar/ava_0724.png"],
             ["avatar/ava_0810.png", "avatar/ava_0811.png", "avatar/ava_0812.png"],
             ["avatar/ava_0906.png", "avatar/ava_0907.png", "avatar/ava_0908.png"],
 
-            // === CINNABAR PATHS (Indices 8 to 15) ===
+            // === CINNABAR PATHS (Indices 9 to 17) ===
             ["avatar/ava_0004.png", "avatar/ava_0005.png", "avatar/ava_0006.png"],
             ["avatar/ava_0155.png", "avatar/ava_0156.png", "avatar/ava_0157.png"],
             ["avatar/ava_0255.png", "avatar/ava_0256.png", "avatar/ava_0257.png"],
@@ -198,7 +199,7 @@
             ["avatar/ava_0813.png", "avatar/ava_0814.png", "avatar/ava_0815.png"],
             ["avatar/ava_0909.png", "avatar/ava_0910.png", "avatar/ava_0911.png"],
 
-            // === CERULEAN PATHS (Indices 16 to 23) ===
+            // === CERULEAN PATHS (Indices 18 to 26) ===
             ["avatar/ava_0007.png", "avatar/ava_0008.png", "avatar/ava_0009.png"],
             ["avatar/ava_0158.png", "avatar/ava_0159.png", "avatar/ava_0160.png"],
             ["avatar/ava_0258.png", "avatar/ava_0259.png", "avatar/ava_0260.png"],
@@ -211,9 +212,9 @@
         ];
         // Dynamic team lookups based on our 24 ordered indices
         function getTeamName(pathIdx) {
-            if (pathIdx >= 0 && pathIdx <= 7) return "Viridian";
-            if (pathIdx >= 8 && pathIdx <= 15) return "Cinnabar";
-            if (pathIdx >= 16 && pathIdx <= 23) return "Cerulean";
+            if (pathIdx >= 0 && pathIdx <= 8) return "Viridian";
+            if (pathIdx >= 9 && pathIdx <= 17) return "Cinnabar";
+            if (pathIdx >= 18 && pathIdx <= 26) return "Cerulean";
             return "Pallet";
         }
         var defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a0aec0'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v2h-16v-2c0-2.66 5.33-4 8-4z'/></svg>";
@@ -483,7 +484,7 @@
             
             // Adjust the window overlay layout styles dynamically for 24 options
             grid.style.display = "grid";
-            grid.style.gridTemplateColumns = "repeat(6, 1fr)";
+            grid.style.gridTemplateColumns = "repeat(9, 1fr)";
             grid.style.gap = "15px";
             grid.style.maxHeight = "400px";
             grid.style.overflowY = "auto";
