@@ -347,11 +347,15 @@
                 editBtn.className = "upload-avatar-lbl";
                 editBtn.innerHTML = "✏️";
                 
-                // Hide the button if they have already locked in a path
+                // Hide the button if they have already locked in a path, otherwise link the gallery open click
                 if (data[i].pathIdx !== -1) {
                     editBtn.style.display = "none";
                 } else {
-                    editBtn.onclick = (function(index) { return function() { openGallery(index); }; })(i);
+                    editBtn.onclick = (function(index) { 
+                        return function() { 
+                            openGallery(index); 
+                        }; 
+                    })(i);
                 }
                 
                 cellDiv.appendChild(img);
