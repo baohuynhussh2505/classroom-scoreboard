@@ -488,11 +488,12 @@
             
             // --- UPDATED FOR PERFECT HORIZONTAL WIDTH COMPATIBILITY ---
             grid.style.display = "grid";
-            grid.style.gridTemplateColumns = "repeat(6, 1fr)"; // 6 icons per row fits flawlessly
+            grid.style.gridTemplateColumns = "repeat(6, 1fr)"; 
             grid.style.gap = "20px";
-            grid.style.maxHeight = "450px"; // Slightly taller to account for vertical rows
+            grid.style.maxHeight = "450px"; 
             grid.style.overflowY = "auto";
-            grid.style.padding = "10px"; // Adds a safety buffer so edge icons don't clip
+            grid.style.padding = "10px"; 
+
             // === YOUR CUSTOM FORM NAMES MAP (ALL 27 FORMS) ===
             var formNames = [
                 // Viridian Forms (0 to 8)
@@ -504,31 +505,36 @@
                 // Cerulean Forms (18 to 26)
                 "Squirtle", "Totodile", "Mudkip", "Piplup", "Oshawott", "Froakie", "Popplio", "Sobble", "Quaxly"
             ];
+
             for (var p = 0; p < basePaths.length; p++) {
                 var team = getTeamName(p);
                 var optionContainer = document.createElement("div");
                 optionContainer.className = "starter-option";
 
+                // Get the custom name first so it's available for both the click and the label
+                var customName = formNames[p] || ("Form " + (p + 1));
+
                 var img = document.createElement("img");
                 img.className = "gallery-img-large";
-                img.style.width = "85px"; // Scaled down to fit 6 options per row cleanly
+                img.style.width = "85px"; 
                 img.style.height = "85px";
                 img.src = basePaths[p][0]; 
                 
-                img.onclick = (function(pathIndex, imgPath, tName) {
+                // Pass customName into the closure properly
+                img.onclick = (function(pathIndex, imgPath, tName, fName) {
                     return function() { 
-                        var check = confirm("Are you sure you want to choose this form?\nYou CANNOT change your team affiliation later.");
+                        var check = confirm("Are you sure you want to choose the " + fName + " path?\nYou CANNOT change your team affiliation later.");
                         if (check) {
                             selectStarter(pathIndex, imgPath);
                         }
                     };
-                })(p, basePaths[p][0], team);
+                })(p, basePaths[p][0], team, customName);
                 
                 var lbl = document.createElement("span");
                 lbl.className = "starter-label";
                 lbl.style.fontSize = "12px";
                 
-                // Displays the team emoji alongside your custom name label string
+                // FIXED: customName is now defined in this scope
                 lbl.innerText = (team === "Viridian" ? "🟢 " : team === "Cinnabar" ? "🔴 " : "🔵 ") + customName;
 
                 optionContainer.appendChild(img);
@@ -538,7 +544,6 @@
             
             document.getElementById("avatarModal").style.display = "flex";
         }
-
         function closeGallery() {
             document.getElementById("avatarModal").style.display = "none";
             activeStudentIndex = null;
